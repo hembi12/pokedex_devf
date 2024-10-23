@@ -96,21 +96,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Función para mostrar los detalles en el modal
-    function showPokemonDetails(pokemon) {
-        document.getElementById('modalImage').src = pokemon.ThumbnailImage;
-        document.getElementById('modalImage').alt = pokemon.ThumbnailAltText;
-        document.getElementById('pokemonModalLabel').textContent = pokemon.name;
-        document.getElementById('modalName').textContent = pokemon.name;
-        document.getElementById('modalNumber').textContent = pokemon.number;
-        document.getElementById('modalType').textContent = pokemon.type.join(', ');
-        document.getElementById('modalWeight').textContent = pokemon.weight;
-        document.getElementById('modalHeight').textContent = pokemon.height;
-        document.getElementById('modalAbilities').textContent = pokemon.abilities.join(', ');
-        document.getElementById('modalWeakness').textContent = pokemon.weakness.join(', ');
+// Función para mostrar los detalles en el modal
+function showPokemonDetails(pokemon) {
+    // Asignar número y nombre en el título del modal
+    document.getElementById('modalNumber').textContent = pokemon.number;
+    document.getElementById('modalName').textContent = pokemon.name;
 
-        pokemonModal.show();
-    }
+    // Asignar detalles adicionales en el modal
+    document.getElementById('modalImage').src = pokemon.ThumbnailImage;
+    document.getElementById('modalImage').alt = pokemon.ThumbnailAltText;
+    document.getElementById('modalNameDetail').textContent = pokemon.name;
+    document.getElementById('modalNumberDetail').textContent = pokemon.number;
+    document.getElementById('modalType').textContent = pokemon.type.join(', ');
+    document.getElementById('modalWeight').textContent = pokemon.weight;
+    document.getElementById('modalHeight').textContent = pokemon.height;
+    document.getElementById('modalAbilities').textContent = pokemon.abilities.join(', ');
+    document.getElementById('modalWeakness').textContent = pokemon.weakness.join(', ');
+
+    // Mostrar el modal
+    pokemonModal.show();
+}
 
     // Función para aplicar los filtros
     function applyFilters() {
