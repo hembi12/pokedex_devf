@@ -34,49 +34,59 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             // Filtramos Pokémon con peso distinto de 9999
-            pokemons = data.filter(pokemon => pokemon.weight !== 9999).map(pokemonData => new Pokemon(pokemonData));
+            pokemons = data
+                .filter(pokemon => pokemon.weight !== 9999)
+                .map(pokemonData => new Pokemon(pokemonData));
             renderPokemons(pokemons);
         })
         .catch(error => console.error('Error al cargar los datos de Pokémon:', error));
 
     // Función para renderizar los Pokémon
     function renderPokemons(pokemonsList) {
-        pokemonContainer.innerHTML = ''; // Limpiar el contenedor
+        // Limpiar el contenedor antes de renderizar nuevos resultados
+        pokemonContainer.innerHTML = '';
+
+        // Usar un Set opcionalmente para asegurar que no haya duplicados
+        const renderedIds = new Set();
 
         pokemonsList.forEach(pokemon => {
-            const col = document.createElement('div');
-            col.classList.add('col-md-3', 'mb-4');
+            if (!renderedIds.has(pokemon.id)) {
+                renderedIds.add(pokemon.id); // Agregar ID al Set para evitar duplicados
 
-            const card = document.createElement('div');
-            card.classList.add('card', 'pokemon-card', 'h-100');
-            card.setAttribute('data-id', pokemon.id);
+                // Crear la tarjeta del Pokémon
+                const col = document.createElement('div');
+                col.classList.add('col-md-3', 'mb-4');
 
-            const img = document.createElement('img');
-            img.src = pokemon.ThumbnailImage;
-            img.classList.add('card-img-top');
-            img.alt = pokemon.ThumbnailAltText;
+                const card = document.createElement('div');
+                card.classList.add('card', 'pokemon-card', 'h-100');
+                card.setAttribute('data-id', pokemon.id);
 
-            const cardBody = document.createElement('div');
-            cardBody.classList.add('card-body');
+                const img = document.createElement('img');
+                img.src = pokemon.ThumbnailImage;
+                img.classList.add('card-img-top');
+                img.alt = pokemon.ThumbnailAltText;
 
-            const cardTitle = document.createElement('h5');
-            cardTitle.classList.add('card-title');
-            cardTitle.textContent = pokemon.name;
+                const cardBody = document.createElement('div');
+                cardBody.classList.add('card-body');
 
-            const cardText = document.createElement('p');
-            cardText.classList.add('card-text');
-            cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
+                const cardTitle = document.createElement('h5');
+                cardTitle.classList.add('card-title');
+                cardTitle.textContent = pokemon.name;
 
-            cardBody.appendChild(cardTitle);
-            cardBody.appendChild(cardText);
-            card.appendChild(img);
-            card.appendChild(cardBody);
-            col.appendChild(card);
-            pokemonContainer.appendChild(col);
+                const cardText = document.createElement('p');
+                cardText.classList.add('card-text');
+                cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
 
-            card.addEventListener('click', () => {
-                showPokemonDetails(pokemon);
-            });
+                cardBody.appendChild(cardTitle);
+                cardBody.appendChild(cardText);
+                card.appendChild(img);
+                card.appendChild(cardBody);
+                col.appendChild(card);
+                pokemonContainer.appendChild(col);
+
+                // Agregar evento para mostrar detalles en el modal
+                card.addEventListener('click', () => showPokemonDetails(pokemon));
+            }
         });
     }
 
