@@ -1,17 +1,85 @@
-/* Aplicar la fuente a toda la página */
-body {
-    font-family: 'Press Start 2P', cursive;
+:root {
+    /* Variables de colores */
+    --primary-color: #cc0000;
+    /* Fondo principal */
+    --secondary-color: #ffde00;
+    /* Amarillo */
+    --shadow-color: #3b4cca;
+    /* Azul del contorno */
+    --white-color: #ffffff;
+    /* Blanco */
+    --black-color: #000000;
+    /* Negro */
+
+    /* Variables de fuentes */
+    --font-title: 'Press Start 2P', cursive;
+    --font-body: 'Roboto', sans-serif;
+
+    /* Otros estilos */
+    --transition-duration: 0.3s;
+    /* Duración para transiciones */
+    --box-shadow: 0 0 8px rgba(255, 222, 0, 0.6);
+    /* Efecto de brillo */
 }
 
-/* Excluir la fuente en los placeholders */
-::placeholder {
-    font-family: inherit;
+/* Aplicar Press Start 2P al resto del cuerpo */
+body {
+    font-family: var(--font-title);
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+h1 {
+    font-size: 80px;
+    font-weight: bold;
+    text-align: center;
+    color: var(--secondary-color);
+    text-shadow:
+        -2px -2px 0 var(--shadow-color),
+        2px -2px 0 var(--shadow-color),
+        -2px 2px 0 var(--shadow-color),
+        2px 2px 0 var(--shadow-color),
+        4px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Cambiar la fuente de la sección de filtros */
+.filter-section,
+.filter-section input,
+.filter-section select,
+.filter-section label {
+    font-family: var(--font-body);
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Cambiar la fuente de los placeholders */
+.filter-section input::placeholder {
+    font-family: var(--font-body);
     font-style: italic;
+}
+
+/* Estilo del borde cuando los elementos están enfocados */
+.filter-section input:focus,
+.filter-section select:focus {
+    outline: none;
+    border: 2px solid var(--secondary-color);
+    box-shadow: var(--box-shadow);
+    transition: border-color var(--transition-duration), box-shadow var(--transition-duration);
+}
+
+/* Estilo para el contenido del modal */
+.modal-content {
+    background-color: var(--white-color);
+    color: var(--black-color);
+    font-family: var(--font-title);
 }
 
 .pokemon-card {
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform var(--transition-duration);
 }
 
 .pokemon-card:hover {
@@ -21,6 +89,6 @@ body {
 #modalImage {
     display: block;
     margin: 0 auto;
-    max-width: 200px; /* Ajusta el tamaño máximo si es necesario */
+    max-width: 200px;
     height: auto;
 }
