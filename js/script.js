@@ -41,54 +41,60 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error al cargar los datos de Pokémon:', error));
 
-    // Función para renderizar los Pokémon
-    function renderPokemons(pokemonsList) {
-        // Limpiar el contenedor antes de renderizar nuevos resultados
-        pokemonContainer.innerHTML = '';
+// Función para renderizar los Pokémon
+function renderPokemons(pokemonsList) {
+    // Limpiar el contenedor antes de renderizar nuevos resultados
+    pokemonContainer.innerHTML = '';
 
-        // Usar un Set opcionalmente para asegurar que no haya duplicados
-        const renderedIds = new Set();
+    // Usar un Set para evitar duplicados
+    const renderedIds = new Set();
 
-        pokemonsList.forEach(pokemon => {
-            if (!renderedIds.has(pokemon.id)) {
-                renderedIds.add(pokemon.id); // Agregar ID al Set para evitar duplicados
+    pokemonsList.forEach(pokemon => {
+        if (!renderedIds.has(pokemon.id)) {
+            renderedIds.add(pokemon.id); // Evitar duplicados
 
-                // Crear la tarjeta del Pokémon
-                const col = document.createElement('div');
-                col.classList.add('col-md-3', 'mb-4');
+            // Crear la estructura de la tarjeta del Pokémon
+            const col = document.createElement('div');
+            col.classList.add('col-md-3', 'mb-4');
 
-                const card = document.createElement('div');
-                card.classList.add('card', 'pokemon-card', 'h-100');
-                card.setAttribute('data-id', pokemon.id);
+            const card = document.createElement('div');
+            card.classList.add('card', 'pokemon-card', 'h-100', 'text-center');
+            card.setAttribute('data-id', pokemon.id);
 
-                const img = document.createElement('img');
-                img.src = pokemon.ThumbnailImage;
-                img.classList.add('card-img-top');
-                img.alt = pokemon.ThumbnailAltText;
+            // Imagen del Pokémon
+            const img = document.createElement('img');
+            img.src = pokemon.ThumbnailImage;
+            img.classList.add('card-img-top', 'mx-auto', 'mt-3');
+            img.alt = pokemon.ThumbnailAltText;
+            img.style.maxWidth = '150px'; // Ajuste opcional para la imagen
 
-                const cardBody = document.createElement('div');
-                cardBody.classList.add('card-body');
+            // Cuerpo de la tarjeta
+            const cardBody = document.createElement('div');
+            cardBody.classList.add('card-body');
 
-                const cardTitle = document.createElement('h5');
-                cardTitle.classList.add('card-title');
-                cardTitle.textContent = pokemon.name;
+            // Mostrar número y nombre del Pokémon
+            const cardTitle = document.createElement('h5');
+            cardTitle.classList.add('card-title', 'mb-2');
+            cardTitle.innerHTML = `<strong>#${pokemon.number}</strong> ${pokemon.name}`;
 
-                const cardText = document.createElement('p');
-                cardText.classList.add('card-text');
-                cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
+            // Mostrar tipo(s) del Pokémon
+            const cardText = document.createElement('p');
+            cardText.classList.add('card-text');
+            cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
 
-                cardBody.appendChild(cardTitle);
-                cardBody.appendChild(cardText);
-                card.appendChild(img);
-                card.appendChild(cardBody);
-                col.appendChild(card);
-                pokemonContainer.appendChild(col);
+            // Construir la tarjeta
+            cardBody.appendChild(cardTitle);
+            cardBody.appendChild(cardText);
+            card.appendChild(img);
+            card.appendChild(cardBody);
+            col.appendChild(card);
+            pokemonContainer.appendChild(col);
 
-                // Agregar evento para mostrar detalles en el modal
-                card.addEventListener('click', () => showPokemonDetails(pokemon));
-            }
-        });
-    }
+            // Agregar evento para mostrar detalles en el modal
+            card.addEventListener('click', () => showPokemonDetails(pokemon));
+        }
+    });
+}
 
     // Función para mostrar los detalles en el modal
     function showPokemonDetails(pokemon) {
