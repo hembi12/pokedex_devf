@@ -1,3 +1,14 @@
+/* Aplicar la fuente a toda la página */
+body {
+    font-family: 'Press Start 2P', cursive;
+}
+
+/* Excluir la fuente en los placeholders */
+::placeholder {
+    font-family: inherit;
+    font-style: italic;
+}
+
 .pokemon-card {
     cursor: pointer;
     transition: transform 0.2s;
