@@ -15,13 +15,16 @@ class Pokemon {
         this.ThumbnailImage = data.ThumbnailImage || '';
         this.id = data.id || 0;
         this.type = data.type || [];
-        this.moves = data.moves || [];
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const pokemonContainer = document.getElementById('pokemonContainer');
     const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const numberFilter = document.getElementById('numberFilter');
+    const weaknessFilter = document.getElementById('weaknessFilter');
+    const abilityFilter = document.getElementById('abilityFilter');
     const pokemonModal = new bootstrap.Modal(document.getElementById('pokemonModal'), {});
 
     let pokemons = [];
@@ -30,91 +33,98 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('data/pokemons.json')
         .then(response => response.json())
         .then(data => {
-            // Filtramos los Pokémon con weight 9999 al cargar los datos
-            const validPokemons = data.filter(pokemon => pokemon.weight !== 9999);
-            pokemons = validPokemons.map(pokemonData => new Pokemon(pokemonData));
+            // Filtramos Pokémon con peso distinto de 9999
+            pokemons = data.filter(pokemon => pokemon.weight !== 9999).map(pokemonData => new Pokemon(pokemonData));
             renderPokemons(pokemons);
         })
         .catch(error => console.error('Error al cargar los datos de Pokémon:', error));
 
-    // Renderizar la lista de Pokémon
+    // Función para renderizar los Pokémon
     function renderPokemons(pokemonsList) {
-        // Limpiar el contenedor antes de renderizar nuevos resultados
-        pokemonContainer.innerHTML = '';
+        pokemonContainer.innerHTML = ''; // Limpiar el contenedor
 
-        // Usar un Set para evitar duplicados
-        const renderedIds = new Set();
+        pokemonsList.forEach(pokemon => {
+            const col = document.createElement('div');
+            col.classList.add('col-md-3', 'mb-4');
 
-        pokemonsList.forEach((pokemon) => {
-            if (!renderedIds.has(pokemon.id)) {
-                renderedIds.add(pokemon.id);
+            const card = document.createElement('div');
+            card.classList.add('card', 'pokemon-card', 'h-100');
+            card.setAttribute('data-id', pokemon.id);
 
-                // Crear la tarjeta del Pokémon
-                const col = document.createElement('div');
-                col.classList.add('col-md-3', 'mb-4');
+            const img = document.createElement('img');
+            img.src = pokemon.ThumbnailImage;
+            img.classList.add('card-img-top');
+            img.alt = pokemon.ThumbnailAltText;
 
-                const card = document.createElement('div');
-                card.classList.add('card', 'pokemon-card', 'h-100');
-                card.setAttribute('data-id', pokemon.id);
+            const cardBody = document.createElement('div');
+            cardBody.classList.add('card-body');
 
-                const img = document.createElement('img');
-                img.src = pokemon.ThumbnailImage;
-                img.classList.add('card-img-top');
-                img.alt = pokemon.ThumbnailAltText;
+            const cardTitle = document.createElement('h5');
+            cardTitle.classList.add('card-title');
+            cardTitle.textContent = pokemon.name;
 
-                const cardBody = document.createElement('div');
-                cardBody.classList.add('card-body');
+            const cardText = document.createElement('p');
+            cardText.classList.add('card-text');
+            cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
 
-                const cardTitle = document.createElement('h5');
-                cardTitle.classList.add('card-title');
-                cardTitle.textContent = pokemon.name;
+            cardBody.appendChild(cardTitle);
+            cardBody.appendChild(cardText);
+            card.appendChild(img);
+            card.appendChild(cardBody);
+            col.appendChild(card);
+            pokemonContainer.appendChild(col);
 
-                const cardText = document.createElement('p');
-                cardText.classList.add('card-text');
-                cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
-
-                cardBody.appendChild(cardTitle);
-                cardBody.appendChild(cardText);
-                card.appendChild(img);
-                card.appendChild(cardBody);
-                col.appendChild(card);
-                pokemonContainer.appendChild(col);
-
-                // Evento para abrir el modal con detalles
-                card.addEventListener('click', () => {
-                    showPokemonDetails(pokemon);
-                });
-            }
+            card.addEventListener('click', () => {
+                showPokemonDetails(pokemon);
+            });
         });
     }
 
-// Mostrar detalles del Pokémon en el modal
-function showPokemonDetails(pokemon) {
-    document.getElementById('modalImage').src = pokemon.ThumbnailImage;
-    document.getElementById('modalImage').alt = pokemon.ThumbnailAltText;
-    document.getElementById('pokemonModalLabel').textContent = pokemon.name;
-    document.getElementById('modalName').textContent = pokemon.name;
-    document.getElementById('modalNumber').textContent = pokemon.number;
-    document.getElementById('modalType').textContent = pokemon.type.join(', ');
-    document.getElementById('modalWeight').textContent = pokemon.weight;
-    document.getElementById('modalHeight').textContent = pokemon.height;
-    document.getElementById('modalAbilities').textContent = pokemon.abilities.join(', ');
-    document.getElementById('modalWeakness').textContent = pokemon.weakness.join(', ');
+    // Función para mostrar los detalles en el modal
+    function showPokemonDetails(pokemon) {
+        document.getElementById('modalImage').src = pokemon.ThumbnailImage;
+        document.getElementById('modalImage').alt = pokemon.ThumbnailAltText;
+        document.getElementById('pokemonModalLabel').textContent = pokemon.name;
+        document.getElementById('modalName').textContent = pokemon.name;
+        document.getElementById('modalNumber').textContent = pokemon.number;
+        document.getElementById('modalType').textContent = pokemon.type.join(', ');
+        document.getElementById('modalWeight').textContent = pokemon.weight;
+        document.getElementById('modalHeight').textContent = pokemon.height;
+        document.getElementById('modalAbilities').textContent = pokemon.abilities.join(', ');
+        document.getElementById('modalWeakness').textContent = pokemon.weakness.join(', ');
 
-    // Mostramos el modal
-    pokemonModal.show();
-}
+        pokemonModal.show();
+    }
 
-    // Funcionalidad de búsqueda de Pokémon
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
+    // Función para aplicar los filtros
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedType = typeFilter.value;
+        const number = numberFilter.value;
+        const weaknessTerm = weaknessFilter.value.toLowerCase();
+        const abilityTerm = abilityFilter.value.toLowerCase();
 
-        // Filtrar los Pokémon por nombre y excluir los que tengan weight 9999
-        const filteredPokemons = pokemons.filter((pokemon) =>
-            pokemon.name.toLowerCase().includes(searchTerm) && pokemon.weight !== 9999
-        );
+        const filteredPokemons = pokemons.filter(pokemon => {
+            const matchesName = pokemon.name.toLowerCase().includes(searchTerm);
+            const matchesType = selectedType ? pokemon.type.includes(selectedType) : true;
+            const matchesNumber = number ? pokemon.number === number : true;
+            const matchesWeakness = weaknessTerm
+                ? pokemon.weakness.some(weakness => weakness.toLowerCase().includes(weaknessTerm))
+                : true;
+            const matchesAbility = abilityTerm
+                ? pokemon.abilities.some(ability => ability.toLowerCase().includes(abilityTerm))
+                : true;
 
-        // Renderizar los Pokémon filtrados
+            return matchesName && matchesType && matchesNumber && matchesWeakness && matchesAbility;
+        });
+
         renderPokemons(filteredPokemons);
-    });
+    }
+
+    // Agregar eventos a los filtros
+    searchInput.addEventListener('input', applyFilters);
+    typeFilter.addEventListener('change', applyFilters);
+    numberFilter.addEventListener('input', applyFilters);
+    weaknessFilter.addEventListener('input', applyFilters);
+    abilityFilter.addEventListener('input', applyFilters);
 });
