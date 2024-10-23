@@ -1,0 +1,15 @@
+.pokemon-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.pokemon-card:hover {
+    transform: scale(1.05);
+}
+
+#modalImage {
+    display: block;
+    margin: 0 auto;
+    max-width: 200px; /* Ajusta el tamaño máximo si es necesario */
+    height: auto;
+}
