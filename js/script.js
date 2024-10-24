@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error al cargar los datos de Pokémon:', error));
 
-    // Función para eliminar duplicados basados en el número del Pokémon
     function removeDuplicates(pokemonList) {
         const uniquePokemons = new Map();
         pokemonList.forEach(pokemon => {
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filteredPokemons = applyFilters();
         const paginatedPokemons = paginate(filteredPokemons, currentPage, itemsPerPage);
         renderPokemons(paginatedPokemons);
-        updatePaginationButtons(filteredPokemons.length);
+        renderPaginationButtons(filteredPokemons.length);
     }
 
     function paginate(pokemonsList, page, itemsPerPage) {
@@ -108,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => showPokemonDetails(pokemon));
     }
 
-    // Función para mostrar detalles en el modal
     function showPokemonDetails(pokemon) {
         document.getElementById('modalImage').src = pokemon.ThumbnailImage;
         document.getElementById('modalImage').alt = pokemon.ThumbnailAltText;
@@ -125,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pokemonModal.show();
     }
 
-    // Función para aplicar filtros
     function applyFilters() {
         const searchTerm = searchInput.value.toLowerCase();
         const selectedType = typeFilter.value;
@@ -148,19 +145,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updatePaginationButtons(totalItems) {
+    function renderPaginationButtons(totalItems) {
         const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const maxVisiblePages = 3; // Número máximo de páginas visibles
+    
+        // Determinar el rango de páginas que se van a mostrar
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+        // Ajustar el rango si estamos al final de la paginación
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+    
+        // Eliminar números de página existentes
+        const pageNumbers = pagination.querySelectorAll('.page-number');
+        pageNumbers.forEach(page => page.remove());
+    
+        // Generar nuevos números de página según el rango
+        for (let i = startPage; i <= endPage; i++) {
+            const pageItem = document.createElement('li');
+            pageItem.classList.add('page-item', 'page-number');
+            if (i === currentPage) pageItem.classList.add('active');
+    
+            const pageLink = document.createElement('a');
+            pageLink.classList.add('page-link');
+            pageLink.href = '#';
+            pageLink.textContent = i;
+    
+            pageLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentPage = i;
+                renderPage();
+            });
+    
+            pageItem.appendChild(pageLink);
+            nextPageBtn.before(pageItem); // Insertar antes del botón "Next"
+        }
+    
+        // Deshabilitar botones "Previous" y "Next" según la página actual
         previousPageBtn.classList.toggle('disabled', currentPage === 1);
         nextPageBtn.classList.toggle('disabled', currentPage === totalPages);
     }
-
+    
     previousPageBtn.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
             renderPage();
         }
     });
-
+    
     nextPageBtn.addEventListener('click', () => {
         const totalPages = Math.ceil(applyFilters().length / itemsPerPage);
         if (currentPage < totalPages) {
