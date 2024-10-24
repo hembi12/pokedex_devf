@@ -70,7 +70,26 @@
         </div>
 
         <!-- Contenedor de Pokémon -->
-        <div class="row" id="pokemonContainer"></div>
+        <div class="row" id="pokemonContainer">
+            <!-- Las tarjetas de Pokémon se generarán aquí dinámicamente -->
+            <!-- Ejemplo de tarjeta de Pokémon sin HP -->
+            <div class="col-md-4 mb-4">
+                <div class="pokemon-card card type-grass" data-bs-toggle="modal" data-bs-target="#pokemonModal">
+                    <div class="card-header">
+                        <h5 class="card-title">Bulbasaur</h5>
+                        <!-- Eliminado el elemento de HP -->
+                    </div>
+                    <div class="card-image">
+                        <img src="images/bulbasaur.png" alt="Bulbasaur" class="card-img-top">
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text"><strong>Tipo:</strong> Planta / Veneno</p>
+                        <p class="card-text"><strong>Habilidades:</strong> Espesura</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Repite esta estructura para cada Pokémon -->
+        </div>
 
         <!-- Paginación -->
         <nav aria-label="Page navigation example">
@@ -98,13 +117,15 @@
                     </div>
                     <div class="modal-body text-center">
                         <img id="modalImage" src="" alt="" class="img-fluid mb-3 rounded">
-                        <p><strong>Nombre:</strong> <span id="modalNameDetail"></span></p>
-                        <p><strong>Número:</strong> <span id="modalNumberDetail"></span></p>
-                        <p><strong>Tipo:</strong> <span id="modalType"></span></p>
-                        <p><strong>Peso:</strong> <span id="modalWeight"></span> kg</p>
-                        <p><strong>Altura:</strong> <span id="modalHeight"></span> cm</p>
-                        <p><strong>Habilidades:</strong> <span id="modalAbilities"></span></p>
-                        <p><strong>Debilidades:</strong> <span id="modalWeakness"></span></p>
+                        <div class="pokemon-stats">
+                            <p><strong>Nombre:</strong> <span id="modalNameDetail"></span></p>
+                            <p><strong>Número:</strong> <span id="modalNumberDetail"></span></p>
+                            <p><strong>Tipo:</strong> <span id="modalType"></span></p>
+                            <p><strong>Peso:</strong> <span id="modalWeight"></span> kg</p>
+                            <p><strong>Altura:</strong> <span id="modalHeight"></span> cm</p>
+                            <p><strong>Habilidades:</strong> <span id="modalAbilities"></span></p>
+                            <p><strong>Debilidades:</strong> <span id="modalWeakness"></span></p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

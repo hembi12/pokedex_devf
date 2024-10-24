@@ -11,6 +11,44 @@
     --black-color: #000000;
     /* Negro */
 
+    /* Variables de colores pastel para cada tipo de Pokémon */
+    --type-normal: #D3D3D3;
+    /* Light Gray */
+    --type-fire: #FFB347;
+    /* Pastel Orange */
+    --type-water: #ADD8E6;
+    /* Light Blue */
+    --type-electric: #FFFACD;
+    /* Lemon Chiffon */
+    --type-grass: #77DD77;
+    /* Pastel Green */
+    --type-ice: #B0E0E6;
+    /* Powder Blue */
+    --type-fighting: #FF6961;
+    /* Pastel Red */
+    --type-poison: #CDA4DE;
+    /* Pastel Purple */
+    --type-ground: #FDFD96;
+    /* Pastel Yellow */
+    --type-flying: #B0C4DE;
+    /* Light Steel Blue */
+    --type-psychic: #FFC0CB;
+    /* Pink */
+    --type-bug: #C9E384;
+    /* Pastel Green */
+    --type-rock: #D2B48C;
+    /* Tan */
+    --type-ghost: #D8BFD8;
+    /* Thistle */
+    --type-dragon: #AEC6CF;
+    /* Pastel Blue */
+    --type-dark: #A9A9A9;
+    /* Dark Gray */
+    --type-steel: #B0C4DE;
+    /* Light Steel Blue */
+    --type-fairy: #FFB6C1;
+    /* Light Pink */
+
     /* Variables de fuentes */
     --font-title: 'Press Start 2P', cursive;
     --font-body: 'Comic Neue', sans-serif;
@@ -70,20 +108,141 @@ h1 {
     transition: border-color var(--transition-duration), box-shadow var(--transition-duration);
 }
 
+/* Estilos de la tarjeta Pokémon */
+.pokemon-card {
+    position: relative;
+    border: 2px solid var(--black-color);
+    border-radius: 10px;
+    width: 100%;
+    overflow: hidden;
+    font-family: var(--font-body);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    transition: transform var(--transition-duration), box-shadow var(--transition-duration);
+    cursor: pointer;
+}
+
+.pokemon-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Aplicar color de fondo según el tipo */
+.type-normal {
+    background-color: var(--type-normal);
+}
+
+.type-fire {
+    background-color: var(--type-fire);
+}
+
+.type-water {
+    background-color: var(--type-water);
+}
+
+.type-electric {
+    background-color: var(--type-electric);
+}
+
+.type-grass {
+    background-color: var(--type-grass);
+}
+
+.type-ice {
+    background-color: var(--type-ice);
+}
+
+.type-fighting {
+    background-color: var(--type-fighting);
+}
+
+.type-poison {
+    background-color: var(--type-poison);
+}
+
+.type-ground {
+    background-color: var(--type-ground);
+}
+
+.type-flying {
+    background-color: var(--type-flying);
+}
+
+.type-psychic {
+    background-color: var(--type-psychic);
+}
+
+.type-bug {
+    background-color: var(--type-bug);
+}
+
+.type-rock {
+    background-color: var(--type-rock);
+}
+
+.type-ghost {
+    background-color: var(--type-ghost);
+}
+
+.type-dragon {
+    background-color: var(--type-dragon);
+}
+
+.type-dark {
+    background-color: var(--type-dark);
+}
+
+.type-steel {
+    background-color: var(--type-steel);
+}
+
+.type-fairy {
+    background-color: var(--type-fairy);
+}
+
+/* Ajustar el encabezado de la tarjeta */
+.pokemon-card .card-header {
+    background-color: rgba(255, 255, 255, 0.7); /* Fondo semi-transparente para mejor legibilidad */
+    border-bottom: 2px solid var(--black-color);
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pokemon-card .card-title {
+    margin: 0;
+    font-size: 18px;
+    font-family: var(--font-title);
+    color: var(--black-color);
+}
+
+.pokemon-card .card-image {
+    background-color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    padding: 10px;
+    border-bottom: 2px solid var(--black-color);
+}
+
+.pokemon-card .card-image img {
+    width: 100%;
+    height: auto;
+}
+
+.pokemon-card .card-body {
+    padding: 10px;
+    font-size: 14px;
+    color: var(--black-color);
+}
+
+.pokemon-card .card-text {
+    margin: 5px 0;
+}
+
 /* Estilo para el contenido del modal */
 .modal-content {
     background-color: var(--white-color);
     color: var(--black-color);
-    font-family: var(--font-title);
-}
-
-.pokemon-card {
-    cursor: pointer;
-    transition: transform var(--transition-duration);
-}
-
-.pokemon-card:hover {
-    transform: scale(1.05);
+    font-family: var(--font-body);
 }
 
 #modalImage {
