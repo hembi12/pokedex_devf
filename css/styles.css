@@ -92,24 +92,3 @@ h1 {
     max-width: 200px;
     height: auto;
 }
-
-footer {
-    background-color: var(--shadow-color);
-    color: var(--white-color);
-    font-family: var(--font-title);
-    font-size: 18px;
-    text-align: center;
-    padding: 15px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
-
-.hover-link {
-    transition: color 0.3s ease;
-}
-
-.hover-link:hover {
-    color: var(--secondary-color); /* Amarillo */
-    text-decoration: underline;
-}
