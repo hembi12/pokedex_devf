@@ -18,106 +18,156 @@ class Pokemon {
     }
 }
 
+// Variables globales para la paginación
+let currentPage = 1;
+const itemsPerPage = 12; // Mostrar 12 Pokémon por página
+
 document.addEventListener('DOMContentLoaded', () => {
     const pokemonContainer = document.getElementById('pokemonContainer');
+    const paginationContainer = document.getElementById('paginationContainer');
     const searchInput = document.getElementById('searchInput');
     const typeFilter = document.getElementById('typeFilter');
     const numberFilter = document.getElementById('numberFilter');
     const weaknessFilter = document.getElementById('weaknessFilter');
     const abilityFilter = document.getElementById('abilityFilter');
-    const pokemonModal = new bootstrap.Modal(document.getElementById('pokemonModal'), {});
 
     let pokemons = [];
 
-    // Cargar los datos del archivo JSON
+    // Cargar datos del archivo JSON
     fetch('data/pokemons.json')
         .then(response => response.json())
         .then(data => {
-            // Filtramos Pokémon con peso distinto de 9999
             pokemons = data
                 .filter(pokemon => pokemon.weight !== 9999)
                 .map(pokemonData => new Pokemon(pokemonData));
             renderPokemons(pokemons);
+            renderPagination(pokemons);
         })
         .catch(error => console.error('Error al cargar los datos de Pokémon:', error));
 
-    // Función para renderizar los Pokémon
+    // Función para renderizar Pokémon en la página actual
     function renderPokemons(pokemonsList) {
-        // Limpiar el contenedor antes de renderizar nuevos resultados
-        pokemonContainer.innerHTML = '';
+        pokemonContainer.innerHTML = ''; // Limpiar contenedor
 
-        // Usar un Set para evitar duplicados
-        const renderedIds = new Set();
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedPokemons = pokemonsList.slice(startIndex, endIndex);
 
-        pokemonsList.forEach(pokemon => {
-            if (!renderedIds.has(pokemon.id)) {
-                renderedIds.add(pokemon.id); // Evitar duplicados
-
-                // Crear la estructura de la tarjeta del Pokémon
-                const col = document.createElement('div');
-                col.classList.add('col-md-3', 'mb-4');
-
-                const card = document.createElement('div');
-                card.classList.add('card', 'pokemon-card', 'h-100', 'text-center');
-                card.setAttribute('data-id', pokemon.id);
-
-                // Imagen del Pokémon
-                const img = document.createElement('img');
-                img.src = pokemon.ThumbnailImage;
-                img.classList.add('card-img-top', 'mx-auto', 'mt-3');
-                img.alt = pokemon.ThumbnailAltText;
-                img.style.maxWidth = '150px'; // Ajuste opcional para la imagen
-
-                // Cuerpo de la tarjeta
-                const cardBody = document.createElement('div');
-                cardBody.classList.add('card-body');
-
-                // Mostrar número y nombre del Pokémon (sin el #)
-                const cardTitle = document.createElement('h5');
-                cardTitle.classList.add('card-title', 'mb-2');
-                cardTitle.innerHTML = `<strong>${pokemon.number}</strong> ${pokemon.name}`;
-
-                // Mostrar tipo(s) del Pokémon
-                const cardText = document.createElement('p');
-                cardText.classList.add('card-text');
-                cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
-
-                // Construir la tarjeta
-                cardBody.appendChild(cardTitle);
-                cardBody.appendChild(cardText);
-                card.appendChild(img);
-                card.appendChild(cardBody);
-                col.appendChild(card);
-                pokemonContainer.appendChild(col);
-
-                // Agregar evento para mostrar detalles en el modal
-                card.addEventListener('click', () => showPokemonDetails(pokemon));
-            }
-        });
+        paginatedPokemons.forEach(pokemon => createPokemonCard(pokemon));
     }
 
-// Función para mostrar los detalles en el modal
-function showPokemonDetails(pokemon) {
-    // Asignar número y nombre en el título del modal
-    document.getElementById('modalNumber').textContent = pokemon.number;
-    document.getElementById('modalName').textContent = pokemon.name;
+    // Función para crear y añadir una tarjeta de Pokémon
+    function createPokemonCard(pokemon) {
+        const col = document.createElement('div');
+        col.classList.add('col-md-3', 'mb-4');
 
-    // Asignar detalles adicionales en el modal
-    document.getElementById('modalImage').src = pokemon.ThumbnailImage;
-    document.getElementById('modalImage').alt = pokemon.ThumbnailAltText;
-    document.getElementById('modalNameDetail').textContent = pokemon.name;
-    document.getElementById('modalNumberDetail').textContent = pokemon.number;
-    document.getElementById('modalType').textContent = pokemon.type.join(', ');
-    document.getElementById('modalWeight').textContent = pokemon.weight;
-    document.getElementById('modalHeight').textContent = pokemon.height;
-    document.getElementById('modalAbilities').textContent = pokemon.abilities.join(', ');
-    document.getElementById('modalWeakness').textContent = pokemon.weakness.join(', ');
+        const card = document.createElement('div');
+        card.classList.add('card', 'pokemon-card', 'h-100', 'text-center');
+        card.setAttribute('data-id', pokemon.id);
 
-    // Mostrar el modal
-    pokemonModal.show();
-}
+        const img = document.createElement('img');
+        img.src = pokemon.ThumbnailImage;
+        img.classList.add('card-img-top', 'mx-auto', 'mt-3');
+        img.alt = pokemon.ThumbnailAltText;
+        img.style.maxWidth = '150px';
 
-    // Función para aplicar los filtros
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title', 'mb-2');
+        cardTitle.innerHTML = `<strong>${pokemon.number}</strong> ${pokemon.name}`;
+
+        const cardText = document.createElement('p');
+        cardText.classList.add('card-text');
+        cardText.innerHTML = `<strong>Tipo:</strong> ${pokemon.type.join(', ')}`;
+
+        cardBody.appendChild(cardTitle);
+        cardBody.appendChild(cardText);
+        card.appendChild(img);
+        card.appendChild(cardBody);
+        col.appendChild(card);
+        pokemonContainer.appendChild(col);
+
+        card.addEventListener('click', () => showPokemonDetails(pokemon));
+    }
+
+    // Función para mostrar detalles en el modal
+    function showPokemonDetails(pokemon) {
+        document.getElementById('modalImage').src = pokemon.ThumbnailImage;
+        document.getElementById('modalImage').alt = pokemon.ThumbnailAltText;
+        document.getElementById('pokemonModalLabel').textContent = `${pokemon.number} ${pokemon.name}`;
+        document.getElementById('modalNameDetail').textContent = pokemon.name;
+        document.getElementById('modalNumberDetail').textContent = pokemon.number;
+        document.getElementById('modalType').textContent = pokemon.type.join(', ');
+        document.getElementById('modalWeight').textContent = pokemon.weight;
+        document.getElementById('modalHeight').textContent = pokemon.height;
+        document.getElementById('modalAbilities').textContent = pokemon.abilities.join(', ');
+        document.getElementById('modalWeakness').textContent = pokemon.weakness.join(', ');
+
+        const pokemonModal = new bootstrap.Modal(document.getElementById('pokemonModal'));
+        pokemonModal.show();
+    }
+
+    // Función para renderizar la paginación
+    function renderPagination(pokemonsList) {
+        paginationContainer.innerHTML = ''; // Limpiar contenedor de paginación
+
+        const totalPages = Math.ceil(pokemonsList.length / itemsPerPage);
+
+        // Botón "Previous"
+        const prevItem = document.createElement('li');
+        prevItem.classList.add('page-item', currentPage === 1 ? 'disabled' : '');
+        const prevLink = document.createElement('a');
+        prevLink.classList.add('page-link');
+        prevLink.textContent = 'Previous';
+        prevLink.href = '#';
+        prevLink.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPokemons(pokemonsList);
+                renderPagination(pokemonsList);
+            }
+        });
+        prevItem.appendChild(prevLink);
+        paginationContainer.appendChild(prevItem);
+
+        // Botones de páginas
+        for (let i = 1; i <= totalPages; i++) {
+            const pageItem = document.createElement('li');
+            pageItem.classList.add('page-item', i === currentPage ? 'active' : '');
+            const pageLink = document.createElement('a');
+            pageLink.classList.add('page-link');
+            pageLink.textContent = i;
+            pageLink.href = '#';
+            pageLink.addEventListener('click', () => {
+                currentPage = i;
+                renderPokemons(pokemonsList);
+                renderPagination(pokemonsList);
+            });
+            pageItem.appendChild(pageLink);
+            paginationContainer.appendChild(pageItem);
+        }
+
+        // Botón "Next"
+        const nextItem = document.createElement('li');
+        nextItem.classList.add('page-item', currentPage === totalPages ? 'disabled' : '');
+        const nextLink = document.createElement('a');
+        nextLink.classList.add('page-link');
+        nextLink.textContent = 'Next';
+        nextLink.href = '#';
+        nextLink.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPokemons(pokemonsList);
+                renderPagination(pokemonsList);
+            }
+        });
+        nextItem.appendChild(nextLink);
+        paginationContainer.appendChild(nextItem);
+    }
+
+    // Función para aplicar filtros
     function applyFilters() {
         const searchTerm = searchInput.value.toLowerCase();
         const selectedType = typeFilter.value;
@@ -130,19 +180,21 @@ function showPokemonDetails(pokemon) {
             const matchesType = selectedType ? pokemon.type.includes(selectedType) : true;
             const matchesNumber = number ? pokemon.number === number : true;
             const matchesWeakness = weaknessTerm
-                ? pokemon.weakness.some(weakness => weakness.toLowerCase().includes(weaknessTerm))
+                ? pokemon.weakness.some(w => w.toLowerCase().includes(weaknessTerm))
                 : true;
             const matchesAbility = abilityTerm
-                ? pokemon.abilities.some(ability => ability.toLowerCase().includes(abilityTerm))
+                ? pokemon.abilities.some(a => a.toLowerCase().includes(abilityTerm))
                 : true;
 
             return matchesName && matchesType && matchesNumber && matchesWeakness && matchesAbility;
         });
 
+        currentPage = 1; // Reiniciar a la primera página
         renderPokemons(filteredPokemons);
+        renderPagination(filteredPokemons);
     }
 
-    // Agregar eventos a los filtros
+    // Eventos para filtros
     searchInput.addEventListener('input', applyFilters);
     typeFilter.addEventListener('change', applyFilters);
     numberFilter.addEventListener('input', applyFilters);
