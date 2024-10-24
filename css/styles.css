@@ -92,3 +92,13 @@ h1 {
     max-width: 200px;
     height: auto;
 }
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
