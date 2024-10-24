@@ -18,45 +18,61 @@ class Pokemon {
     }
 }
 
-// Variables globales para la paginación
-let currentPage = 1;
-const itemsPerPage = 12; // Mostrar 12 Pokémon por página
-
 document.addEventListener('DOMContentLoaded', () => {
     const pokemonContainer = document.getElementById('pokemonContainer');
-    const paginationContainer = document.getElementById('paginationContainer');
     const searchInput = document.getElementById('searchInput');
     const typeFilter = document.getElementById('typeFilter');
     const numberFilter = document.getElementById('numberFilter');
     const weaknessFilter = document.getElementById('weaknessFilter');
     const abilityFilter = document.getElementById('abilityFilter');
+    const pagination = document.getElementById('pagination');
+    const previousPageBtn = document.getElementById('previousPage');
+    const nextPageBtn = document.getElementById('nextPage');
 
     let pokemons = [];
+    let currentPage = 1;
+    const itemsPerPage = 12;
 
     // Cargar datos del archivo JSON
     fetch('data/pokemons.json')
         .then(response => response.json())
         .then(data => {
-            pokemons = data
-                .filter(pokemon => pokemon.weight !== 9999)
-                .map(pokemonData => new Pokemon(pokemonData));
-            renderPokemons(pokemons);
-            renderPagination(pokemons);
+            pokemons = removeDuplicates(
+                data.filter(pokemon => pokemon.weight !== 9999)
+                    .map(pokemonData => new Pokemon(pokemonData))
+            );
+            renderPage();
         })
         .catch(error => console.error('Error al cargar los datos de Pokémon:', error));
 
-    // Función para renderizar Pokémon en la página actual
-    function renderPokemons(pokemonsList) {
-        pokemonContainer.innerHTML = ''; // Limpiar contenedor
-
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedPokemons = pokemonsList.slice(startIndex, endIndex);
-
-        paginatedPokemons.forEach(pokemon => createPokemonCard(pokemon));
+    // Función para eliminar duplicados basados en el número del Pokémon
+    function removeDuplicates(pokemonList) {
+        const uniquePokemons = new Map();
+        pokemonList.forEach(pokemon => {
+            if (!uniquePokemons.has(pokemon.number)) {
+                uniquePokemons.set(pokemon.number, pokemon);
+            }
+        });
+        return Array.from(uniquePokemons.values());
     }
 
-    // Función para crear y añadir una tarjeta de Pokémon
+    function renderPage() {
+        const filteredPokemons = applyFilters();
+        const paginatedPokemons = paginate(filteredPokemons, currentPage, itemsPerPage);
+        renderPokemons(paginatedPokemons);
+        updatePaginationButtons(filteredPokemons.length);
+    }
+
+    function paginate(pokemonsList, page, itemsPerPage) {
+        const start = (page - 1) * itemsPerPage;
+        return pokemonsList.slice(start, start + itemsPerPage);
+    }
+
+    function renderPokemons(pokemonsList) {
+        pokemonContainer.innerHTML = '';
+        pokemonsList.forEach(pokemon => createPokemonCard(pokemon));
+    }
+
     function createPokemonCard(pokemon) {
         const col = document.createElement('div');
         col.classList.add('col-md-3', 'mb-4');
@@ -109,64 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pokemonModal.show();
     }
 
-    // Función para renderizar la paginación
-    function renderPagination(pokemonsList) {
-        paginationContainer.innerHTML = ''; // Limpiar contenedor de paginación
-
-        const totalPages = Math.ceil(pokemonsList.length / itemsPerPage);
-
-        // Botón "Previous"
-        const prevItem = document.createElement('li');
-        prevItem.classList.add('page-item', currentPage === 1 ? 'disabled' : '');
-        const prevLink = document.createElement('a');
-        prevLink.classList.add('page-link');
-        prevLink.textContent = 'Previous';
-        prevLink.href = '#';
-        prevLink.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderPokemons(pokemonsList);
-                renderPagination(pokemonsList);
-            }
-        });
-        prevItem.appendChild(prevLink);
-        paginationContainer.appendChild(prevItem);
-
-        // Botones de páginas
-        for (let i = 1; i <= totalPages; i++) {
-            const pageItem = document.createElement('li');
-            pageItem.classList.add('page-item', i === currentPage ? 'active' : '');
-            const pageLink = document.createElement('a');
-            pageLink.classList.add('page-link');
-            pageLink.textContent = i;
-            pageLink.href = '#';
-            pageLink.addEventListener('click', () => {
-                currentPage = i;
-                renderPokemons(pokemonsList);
-                renderPagination(pokemonsList);
-            });
-            pageItem.appendChild(pageLink);
-            paginationContainer.appendChild(pageItem);
-        }
-
-        // Botón "Next"
-        const nextItem = document.createElement('li');
-        nextItem.classList.add('page-item', currentPage === totalPages ? 'disabled' : '');
-        const nextLink = document.createElement('a');
-        nextLink.classList.add('page-link');
-        nextLink.textContent = 'Next';
-        nextLink.href = '#';
-        nextLink.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderPokemons(pokemonsList);
-                renderPagination(pokemonsList);
-            }
-        });
-        nextItem.appendChild(nextLink);
-        paginationContainer.appendChild(nextItem);
-    }
-
     // Función para aplicar filtros
     function applyFilters() {
         const searchTerm = searchInput.value.toLowerCase();
@@ -175,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const weaknessTerm = weaknessFilter.value.toLowerCase();
         const abilityTerm = abilityFilter.value.toLowerCase();
 
-        const filteredPokemons = pokemons.filter(pokemon => {
+        return pokemons.filter(pokemon => {
             const matchesName = pokemon.name.toLowerCase().includes(searchTerm);
             const matchesType = selectedType ? pokemon.type.includes(selectedType) : true;
             const matchesNumber = number ? pokemon.number === number : true;
@@ -188,16 +146,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return matchesName && matchesType && matchesNumber && matchesWeakness && matchesAbility;
         });
-
-        currentPage = 1; // Reiniciar a la primera página
-        renderPokemons(filteredPokemons);
-        renderPagination(filteredPokemons);
     }
 
-    // Eventos para filtros
-    searchInput.addEventListener('input', applyFilters);
-    typeFilter.addEventListener('change', applyFilters);
-    numberFilter.addEventListener('input', applyFilters);
-    weaknessFilter.addEventListener('input', applyFilters);
-    abilityFilter.addEventListener('input', applyFilters);
+    function updatePaginationButtons(totalItems) {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        previousPageBtn.classList.toggle('disabled', currentPage === 1);
+        nextPageBtn.classList.toggle('disabled', currentPage === totalPages);
+    }
+
+    previousPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderPage();
+        }
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+        const totalPages = Math.ceil(applyFilters().length / itemsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderPage();
+        }
+    });
+
+    searchInput.addEventListener('input', renderPage);
+    typeFilter.addEventListener('change', renderPage);
+    numberFilter.addEventListener('input', renderPage);
+    weaknessFilter.addEventListener('input', renderPage);
+    abilityFilter.addEventListener('input', renderPage);
 });
